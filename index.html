@@ -1,243 +1,420 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>David's Poems</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>David's Poems — Archive</title>
 
-<style>
+  <meta name="description" content="A beautiful, responsive place where David's poems are stored, read, and shared.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg1: #0f172a;
+      --bg2: #0b1220;
+      --accent: #7dd3fc;
+      --muted: #94a3b8;
+      --card: rgba(255,255,255,0.03);
+      --glass: rgba(255,255,255,0.04);
+      --radius: 14px;
+      --max-width: 1100px;
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+
     body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f4f4f8;
-        display: flex;
-        justify-content: center;
-        padding: 20px;
-        transition: background 0.3s;
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      color: #e6eef8;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
     }
 
-    .dark {
-        background: #1b1b1d;
-        color: white;
+    .app { width: 100%; max-width: var(--max-width); }
+
+    header {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
     }
 
-    .container {
-        width: 100%;
-        max-width: 650px;
-        background: white;
-        padding: 20px;
-        border-radius: 15px;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-        transition: background 0.3s;
-    }
-
-    .dark .container {
-        background: #2a2a2e;
+    .logo {
+      min-width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(125,211,252,0.12), rgba(99,102,241,0.08));
+      display: grid;
+      place-items: center;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+      font-family: 'Crimson Pro', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
     }
 
     h1 {
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 30px;
+      margin: 0;
+      font-family: 'Crimson Pro', serif;
+      font-size: 28px;
     }
 
-    textarea {
+    p.lead {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .controls {
+      margin-left: auto;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      cursor: pointer;
+      font-weight: 600;
+      color: inherit;
+    }
+
+    .btn.accent {
+      background: linear-gradient(90deg, rgba(125,211,252,0.07), rgba(99,102,241,0.06));
+      border-color: rgba(125,211,252,0.12);
+      color: var(--accent);
+    }
+
+    .search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,0.03);
+      padding: 8px 12px;
+      border-radius: 12px;
+    }
+
+    .search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: inherit;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 22px;
+    }
+
+    @media(max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+      .controls { order: 3; width: 100%; justify-content: space-between; }
+    }
+
+    @media(max-width: 600px) {
+      body { padding: 20px 10px; }
+
+      h1 { font-size: 23px; }
+
+      header { flex-direction: column; align-items: flex-start; gap: 10px; }
+
+      .controls {
         width: 100%;
-        height: 130px;
-        padding: 10px;
-        font-size: 16px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        resize: vertical;
+        justify-content: space-between;
+        gap: 6px;
+      }
+
+      .viewer { padding: 18px; }
+      .poem-body { font-size: 16px; }
     }
 
-    .top-bar {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 15px;
+    .pane {
+      background: var(--glass);
+      padding: 18px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.03);
     }
 
-    input {
-        flex: 1;
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        font-size: 16px;
+    .poem-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+      max-height: 60vh;
+      overflow: auto;
     }
 
-    button {
-        padding: 10px 18px;
-        background: #4a6eff;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        cursor: pointer;
-        white-space: nowrap;
+    .poem-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.12s;
     }
 
-    button:hover {
-        background: #3a58d4;
+    .poem-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
     }
 
-    .dark button {
-        background: #596dff;
+    .poem-thumb {
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), rgba(99,102,241,0.9));
+      color: var(--bg2);
+      font-weight: 700;
     }
 
-    .poem {
-        background: #f0f2ff;
-        padding: 15px;
-        border-radius: 10px;
-        margin-top: 15px;
-        white-space: pre-wrap;
-        line-height: 1.5;
-        position: relative;
-        transition: background 0.3s;
+    .viewer {
+      background: var(--glass);
+      padding: 28px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.03);
+      min-height: 300px;
     }
 
-    .dark .poem {
-        background: #3a3a42;
+    .viewer h2 { margin-bottom: 8px; }
+
+    .editor {
+      margin-top: 18px;
+      display: none;
     }
 
-    .actions {
-        margin-top: 10px;
-        display: flex;
-        gap: 10px;
+    textarea, input.input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.07);
+      color: inherit;
     }
 
-    .edit-btn, .delete-btn {
-        flex: 1;
-        padding: 8px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 15px;
-    }
+    textarea { min-height: 130px; }
 
-    .edit-btn {
-        background: #ffb84a;
-    }
-
-    .delete-btn {
-        background: #ff4a4a;
-        color: white;
-    }
-
-    .edit-btn:hover { background: #e89f2a; }
-    .delete-btn:hover { background: #d93636; }
-
-    .no-poems {
-        text-align: center;
-        margin-top: 20px;
-        color: #777;
-    }
-
-</style>
+    footer { margin-top: 20px; text-align: center; font-size: 13px; color: var(--muted); }
+  </style>
 </head>
 
 <body>
+<div class="app">
 
-<div class="container">
-    <h1>David's Poems</h1>
+  <header>
+    <div class="logo">D</div>
 
-    <div class="top-bar">
-        <input id="searchInput" placeholder="Search poems..." oninput="loadPoems()" />
-        <button onclick="toggleDarkMode()">Dark Mode</button>
+    <div>
+      <h1 id="title-label">David's Poems</h1>
+      <p class="lead">A calm archive for reading & storing poems.</p>
     </div>
 
-    <textarea id="poemInput" placeholder="Write a new poem..."></textarea>
-    <button onclick="addPoem()">Save Poem</button>
+    <div class="controls">
+      <div class="search">
+        <svg width="16" height="16" fill="none"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6"/></svg>
+        <input id="q" placeholder="Search poems">
+      </div>
+      <button id="newBtn" class="btn accent">+ New</button>
+    </div>
+  </header>
 
-    <div id="poemList"></div>
+  <main>
+    <aside class="pane">
+      <div style="display:flex;margin-bottom:10px;">
+        <div class="tag" style="font-size:12px;color:var(--muted)">Local storage</div>
+        <div style="margin-left:auto;color:var(--muted)" id="count">0 poems</div>
+      </div>
+
+      <div id="list" class="poem-list"></div>
+    </aside>
+
+    <section class="viewer">
+      <div id="viewerArea" class="empty">
+        <div>Welcome — select or create a poem.</div>
+      </div>
+
+      <div id="editor" class="editor">
+        <input id="titleInput" class="input" placeholder="Title">
+        <textarea id="bodyInput" placeholder="Write your poem..."></textarea>
+
+        <div style="display:flex;gap:10px;margin-top:12px;">
+          <button id="saveBtn" class="btn accent">Save</button>
+          <button id="cancelEdit" class="btn">Cancel</button>
+          <button id="deleteBtn" class="btn" style="margin-left:auto;color:#ffb4b4;">Delete</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>Poems saved locally in your browser.</footer>
+
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        loadPoems();
-        if (localStorage.getItem("dark_mode") === "enabled") {
-            document.body.classList.add("dark");
-        }
-    });
+/* STORAGE */
+const STORAGE_KEY = "davids_poems_v1";
 
-    function addPoem() {
-        const text = document.getElementById("poemInput").value.trim();
-        if (!text) {
-            alert("Poem is empty!");
-            return;
-        }
+function genId() {
+  return "p_" + Math.random().toString(36).slice(2, 9);
+}
 
-        let poems = JSON.parse(localStorage.getItem("david_poems")) || [];
-        poems.push(text);
+function loadPoems() {
+  let raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return [];
+  try { return JSON.parse(raw); }
+  catch { return []; }
+}
 
-        localStorage.setItem("david_poems", JSON.stringify(poems));
-        document.getElementById("poemInput").value = "";
-        loadPoems();
-    }
+function savePoems() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(poems));
+  renderList();
+}
 
-    function deletePoem(index) {
-        let poems = JSON.parse(localStorage.getItem("david_poems")) || [];
-        poems.splice(index, 1);
-        localStorage.setItem("david_poems", JSON.stringify(poems));
-        loadPoems();
-    }
+/* DATA */
+let poems = loadPoems();
+let currentId = null;
 
-    function editPoem(index) {
-        let poems = JSON.parse(localStorage.getItem("david_poems")) || [];
-        const newText = prompt("Edit your poem:", poems[index]);
+/* ELEMENTS */
+const listEl = document.getElementById("list");
+const q = document.getElementById("q");
+const viewerArea = document.getElementById("viewerArea");
+const editor = document.getElementById("editor");
+const titleInput = document.getElementById("titleInput");
+const bodyInput = document.getElementById("bodyInput");
+const newBtn = document.getElementById("newBtn");
+const saveBtn = document.getElementById("saveBtn");
+const cancelEdit = document.getElementById("cancelEdit");
+const deleteBtn = document.getElementById("deleteBtn");
+const count = document.getElementById("count");
 
-        if (newText !== null) {
-            poems[index] = newText.trim();
-            localStorage.setItem("david_poems", JSON.stringify(poems));
-            loadPoems();
-        }
-    }
+/* RENDER LIST */
+function renderList(filter = "") {
+  listEl.innerHTML = "";
 
-    function toggleDarkMode() {
-        document.body.classList.toggle("dark");
-        localStorage.setItem("dark_mode",
-            document.body.classList.contains("dark") ? "enabled" : "disabled"
-        );
-    }
+  let filtered = poems.filter(p =>
+    p.title.toLowerCase().includes(filter.toLowerCase()) ||
+    p.body.toLowerCase().includes(filter.toLowerCase())
+  ).sort((a,b) => b.created - a.created);
 
-    function loadPoems() {
-        const poemList = document.getElementById("poemList");
-        const search = document.getElementById("searchInput").value.toLowerCase();
-        poemList.innerHTML = "";
+  filtered.forEach(p => {
+    let div = document.createElement("div");
+    div.className = "poem-item";
+    div.innerHTML = `
+      <div class="poem-thumb">${(p.title||"U").slice(0,1).toUpperCase()}</div>
+      <div>
+        <div class="poem-title">${p.title || "Untitled"}</div>
+        <div class="poem-sub" style="color:var(--muted);font-size:13px;">
+          ${new Date(p.created).toLocaleString()}
+        </div>
+      </div>`;
 
-        let poems = JSON.parse(localStorage.getItem("david_poems")) || [];
+    div.onclick = () => openPoem(p.id);
+    listEl.appendChild(div);
+  });
 
-        const filtered = poems.filter(p => p.toLowerCase().includes(search));
+  count.textContent = poems.length + (poems.length === 1 ? " poem" : " poems");
 
-        if (filtered.length === 0) {
-            poemList.innerHTML = "<p class='no-poems'>No poems found.</p>";
-            return;
-        }
+  if (filtered.length === 0) {
+    listEl.innerHTML = `<div style="color:var(--muted);padding:10px;">No matching poems.</div>`;
+  }
+}
 
-        filtered.forEach((text, index) => {
-            const div = document.createElement("div");
-            div.className = "poem";
-            div.textContent = text;
+/* VIEW POEM */
+function openPoem(id) {
+  let p = poems.find(x => x.id === id);
+  if (!p) return;
 
-            const actions = document.createElement("div");
-            actions.className = "actions";
+  currentId = id;
+  viewerArea.style.display = "block";
+  editor.style.display = "block";
 
-            const editBtn = document.createElement("button");
-            editBtn.className = "edit-btn";
-            editBtn.textContent = "Edit";
-            editBtn.onclick = () => editPoem(index);
+  viewerArea.innerHTML = `
+    <h2>${escapeHtml(p.title || "Untitled")}</h2>
+    <div style="color:var(--muted);font-size:13px;margin-bottom:14px;">
+      ${new Date(p.created).toLocaleString()}
+    </div>
+    <div class="poem-body">${escapeHtml(p.body)}</div>
+  `;
 
-            const delBtn = document.createElement("button");
-            delBtn.className = "delete-btn";
-            delBtn.textContent = "Delete";
-            delBtn.onclick = () => deletePoem(index);
+  titleInput.value = p.title;
+  bodyInput.value = p.body;
+}
 
-            actions.appendChild(editBtn);
-            actions.appendChild(delBtn);
+function escapeHtml(str) {
+  return str.replace(/&/g,"&amp;")
+            .replace(/</g,"&lt;")
+            .replace(/>/g,"&gt;");
+}
 
-            div.appendChild(actions);
-            poemList.appendChild(div);
-        });
-    }
+/* NEW POEM */
+newBtn.onclick = () => {
+  currentId = null;
+  titleInput.value = "";
+  bodyInput.value = "";
+  editor.style.display = "block";
+  viewerArea.innerHTML = "<div style='color:var(--muted)'>New poem</div>";
+};
+
+/* SAVE */
+saveBtn.onclick = () => {
+  let t = titleInput.value.trim();
+  let b = bodyInput.value.trim();
+  if (!b) return alert("Poem body cannot be empty.");
+
+  if (currentId) {
+    poems = poems.map(p =>
+      p.id === currentId ? { ...p, title: t, body: b } : p
+    );
+  } else {
+    currentId = genId();
+    poems.push({ id: currentId, title: t, body: b, created: Date.now() });
+  }
+
+  savePoems();
+  openPoem(currentId);
+};
+
+/* DELETE */
+deleteBtn.onclick = () => {
+  if (!currentId) return;
+  if (!confirm("Delete this poem?")) return;
+
+  poems = poems.filter(p => p.id !== currentId);
+  savePoems();
+
+  currentId = null;
+  viewerArea.innerHTML = "<div style='color:var(--muted)'>Poem deleted.</div>";
+  editor.style.display = "none";
+};
+
+/* CANCEL */
+cancelEdit.onclick = () => {
+  editor.style.display = "none";
+};
+
+/* SEARCH */
+q.oninput = () => renderList(q.value);
+
+/* INIT */
+renderList();
 </script>
 
 </body>
