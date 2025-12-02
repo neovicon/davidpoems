@@ -112,6 +112,16 @@
     .topbar{display:flex; gap:8px; align-items:center}
     @media (max-width:500px){
     body{padding:20px 10px;}
+    header{flex-direction:column; align-items:flex-start; gap:14px; width:100%;}
+    .controls{width:100%; justify-content:space-between; flex-wrap:wrap;}
+    .search{flex:1; min-width:140px;}
+    h1{font-size:22px;}
+    .lead{font-size:12px;}
+    main{grid-template-columns:1fr;}
+    .pane, .viewer{padding:14px;}
+    .poem-body{font-size:16px;}
+    .logo{width:60px; height:60px; font-size:18px;}
+  }
     header{flex-direction:column; align-items:flex-start; gap:14px;}
     .controls{width:100%; justify-content:space-between;}
     h1{font-size:22px;}
@@ -205,8 +215,7 @@
 
     // sample data to show good design on first load
     const sample = [
-      {id: genId(), title: 'Dawn on Quiet Hills', body: 'Dawn spills like quiet coins\nOn the roofs of the town\nI keep a small pocket of sky\nTo remember what I found.' , created: Date.now()},
-      {id: genId(), title: 'A Single Window', body: 'There is a single window\nThat remembers every footstep\nAnd in that remembering\nThe house learns to forgive.' , created: Date.now()-86400000}
+      
     ];
 
     function genId(){return 'p_'+Math.random().toString(36).slice(2,9)}
@@ -292,6 +301,25 @@
     });
 
     saveBtn.addEventListener('click', ()=>{
+      const t = titleInput.value.trim(); const b = bodyInput.value.trim();
+      if(!b){ alert('Poem body is empty — please write something.'); return; }
+
+      let savedId = currentId;
+
+      if(currentId){
+        poems = poems.map(p=> p.id===currentId ? {...p, title:t, body:b} : p);
+      }else{
+        savedId = genId();
+        poems.push({id:savedId, title:t, body:b, created: Date.now()});
+      }
+
+      saveAll(poems);
+      renderList(q.value);
+
+      editor.style.display='none'; viewerArea.style.display='block';
+
+      openViewer(savedId);
+    });('click', ()=>{
       const t = titleInput.value.trim(); const b = bodyInput.value.trim();
       if(!b){ alert('Poem body is empty — please write something.'); return; }
       if(currentId){
