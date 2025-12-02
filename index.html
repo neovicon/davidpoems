@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>David's Poems — Archive</title>
+  <meta name="description" content="A beautiful, responsive place where David's poems are stored, read, and shared." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1: #0f172a; /* deep navy */
+      --bg2: #0b1220; /* darker */
+      --accent: #7dd3fc; /* cyan */
+      --muted: #94a3b8;
+      --card: rgba(255,255,255,0.03);
+      --glass: rgba(255,255,255,0.04);
+      --radius: 14px;
+      --max-width: 1100px;
+      color-scheme: dark;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: linear-gradient(180deg,var(--bg1),var(--bg2));
+      color: #e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:40px 20px;
+    }
+    .app{
+      width:100%;
+      max-width:var(--max-width);
+    }
+    header{
+      display:flex;
+      gap:20px;
+      align-items:center;
+      margin-bottom:22px;
+    }
+    .logo{
+      min-width:72px;
+      height:72px;
+      border-radius:16px;
+      background:linear-gradient(135deg, rgba(125,211,252,0.12), rgba(99,102,241,0.08));
+      display:grid;place-items:center;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.04);
+      font-family: 'Crimson Pro', serif;
+      font-size:22px;
+      font-weight:700;
+      color:var(--accent);
+    }
+    h1{font-family: 'Crimson Pro', serif; margin:0; font-size:28px}
+    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+    .controls{
+      margin-left:auto; display:flex; gap:10px; align-items:center;
+    }
+    .btn{
+      background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.06);
+      padding:10px 14px; border-radius:12px; cursor:pointer; color:inherit; font-weight:600; font-size:14px;
+      backdrop-filter: blur(6px);
+    }
+    .btn.accent{background:linear-gradient(90deg, rgba(125,211,252,0.07), rgba(99,102,241,0.06)); border:1px solid rgba(125,211,252,0.12); color:var(--accent)}
+    .search{
+      display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:12px; background:var(--glass); border:1px solid rgba(255,255,255,0.03);
+    }
+    .search input{background:transparent; border:0; outline:none; color:inherit; font-size:14px}
+
+    main{display:grid; grid-template-columns: 360px 1fr; gap:22px;}
+    @media (max-width:900px){ main{grid-template-columns:1fr; } .controls{margin-left:0} }
+
+    /* left column */
+    .pane{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:var(--radius); padding:18px; min-height:380px; border:1px solid rgba(255,255,255,0.03);
+    }
+    .poem-list{display:flex; flex-direction:column; gap:10px; margin-top:12px; max-height:60vh; overflow:auto; padding-right:6px}
+    .poem-item{display:flex; gap:12px; align-items:center; padding:10px; border-radius:12px; cursor:pointer; transition: all .12s;}
+    .poem-item:hover{transform:translateY(-3px); box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    .poem-thumb{width:46px;height:46px;border-radius:10px; display:grid; place-items:center; font-weight:700; color:var(--bg2); background:linear-gradient(135deg,var(--accent), rgba(99,102,241,0.9));}
+    .poem-meta{flex:1}
+    .poem-title{font-weight:600}
+    .poem-sub{font-size:13px;color:var(--muted)}
+
+    /* right column */
+    .viewer{background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); padding:28px; border-radius:var(--radius); min-height:380px; border:1px solid rgba(255,255,255,0.03)}
+    .viewer h2{margin:0 0 8px; font-family:'Crimson Pro',serif; font-size:26px}
+    .viewer .meta{color:var(--muted); font-size:13px; margin-bottom:14px}
+    .poem-body{white-space:pre-wrap; line-height:1.65; font-size:18px; font-family:'Crimson Pro', serif; color:#f6fbff}
+
+    .empty{display:grid; place-items:center; color:var(--muted); height:100%; gap:12px}
+
+    /* form */
+    .form-row{display:flex; gap:10px; margin-top:12px}
+    .field{flex:1}
+    .input, textarea{width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); background:transparent; color:inherit; resize:vertical}
+    textarea{min-height:120px}
+
+    footer{margin-top:18px; color:var(--muted); font-size:13px; text-align:center}
+
+    /* small niceties */
+    .tag{display:inline-block; padding:6px 8px; border-radius:999px; font-size:12px; color:var(--muted); border:1px solid rgba(255,255,255,0.02)}
+    .topbar{display:flex; gap:8px; align-items:center}
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-labelledby="title">
+    <header>
+      <div class="logo" aria-hidden="true">D</div>
+      <div>
+        <h1 id="title">David's Poems</h1>
+        <p class="lead">A calm, elegant archive for reading & storing David's poems. Responsive • Accessible • Local-first</p>
+      </div>
+
+      <div class="controls">
+        <div class="search" title="Search poems">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <input id="q" placeholder="Search title or body..." aria-label="Search poems" />
+        </div>
+        <button id="newBtn" class="btn accent" aria-haspopup="dialog">+ New Poem</button>
+      </div>
+    </header>
+
+    <main>
+      <aside class="pane" aria-label="Poem list">
+        <div class="topbar">
+          <div class="tag">Local storage</div>
+          <div style="margin-left:auto;color:var(--muted);font-size:13px" id="count">0 poems</div>
+        </div>
+
+        <div class="poem-list" id="list" role="list">
+          <!-- dynamic -->
+        </div>
+
+        <div style="margin-top:14px; display:flex; gap:10px">
+          <button id="export" class="btn">Export JSON</button>
+          <button id="import" class="btn">Import</button>
+        </div>
+      </aside>
+
+      <section class="viewer" aria-live="polite">
+        <div id="viewerArea" class="empty">
+          <div>
+            <strong>Welcome</strong>
+            <div style="margin-top:8px;color:var(--muted)">Select a poem or create a new one to get started.</div>
+          </div>
+        </div>
+
+        <div id="editor" style="display:none; margin-top:18px">
+          <div style="display:flex; gap:12px; align-items:center; justify-content:space-between">
+            <div>
+              <input id="title" class="input" placeholder="Poem title" />
+              <div style="margin-top:6px;color:var(--muted);font-size:13px">A short, evocative title</div>
+            </div>
+            <div style="min-width:180px; text-align:right">
+              <div style="font-size:13px;color:var(--muted)">Content preview</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <textarea id="body" placeholder="Write the poem here..."></textarea>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:12px">
+            <button id="saveBtn" class="btn accent">Save Poem</button>
+            <button id="cancelEdit" class="btn">Cancel</button>
+            <button id="deleteBtn" class="btn" style="margin-left:auto;color:#ffb4b4;border-color:rgba(255,180,180,0.06)">Delete</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div>Made with care — poems are stored locally in your browser's localStorage.</div>
+    </footer>
+  </div>
+
+  <input id="fileImport" type="file" accept="application/json" style="display:none">
+
+  <script>
+    // Small local-first poems app
+    const STORAGE_KEY = 'davids_poems_v1';
+
+    // sample data to show good design on first load
+    const sample = [
+      {id: genId(), title: 'Dawn on Quiet Hills', body: 'Dawn spills like quiet coins\nOn the roofs of the town\nI keep a small pocket of sky\nTo remember what I found.' , created: Date.now()},
+      {id: genId(), title: 'A Single Window', body: 'There is a single window\nThat remembers every footstep\nAnd in that remembering\nThe house learns to forgive.' , created: Date.now()-86400000}
+    ];
+
+    function genId(){return 'p_'+Math.random().toString(36).slice(2,9)}
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return sample.slice();
+        return JSON.parse(raw);
+      }catch(e){console.error(e); return sample.slice();}
+    }
+
+    function saveAll(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); renderList(); }
+
+    let poems = load();
+
+    // elements
+    const listEl = document.getElementById('list');
+    const viewerArea = document.getElementById('viewerArea');
+    const editor = document.getElementById('editor');
+    const newBtn = document.getElementById('newBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelEdit = document.getElementById('cancelEdit');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const q = document.getElementById('q');
+    const count = document.getElementById('count');
+    const titleInput = document.getElementById('title');
+    const bodyInput = document.getElementById('body');
+    const exportBtn = document.getElementById('export');
+    const importBtn = document.getElementById('import');
+    const fileImport = document.getElementById('fileImport');
+
+    let currentId = null;
+
+    function renderList(filter=''){
+      listEl.innerHTML='';
+      const filtered = poems.filter(p => {
+        const ql = filter.trim().toLowerCase();
+        if(!ql) return true;
+        return p.title.toLowerCase().includes(ql) || p.body.toLowerCase().includes(ql);
+      }).sort((a,b)=> b.created - a.created);
+
+      filtered.forEach(p=>{
+        const item = document.createElement('div'); item.className='poem-item'; item.role='listitem';
+        item.tabIndex=0;
+        const thumb = document.createElement('div'); thumb.className='poem-thumb'; thumb.textContent = (p.title||'Untitled').slice(0,1).toUpperCase();
+        const meta = document.createElement('div'); meta.className='poem-meta';
+        const t = document.createElement('div'); t.className='poem-title'; t.textContent = p.title || 'Untitled';
+        const s = document.createElement('div'); s.className='poem-sub'; s.textContent = new Date(p.created).toLocaleString();
+        meta.appendChild(t); meta.appendChild(s);
+        item.appendChild(thumb); item.appendChild(meta);
+        item.addEventListener('click', ()=> openViewer(p.id));
+        item.addEventListener('keydown', (e)=>{ if(e.key==='Enter') openViewer(p.id) });
+        listEl.appendChild(item);
+      });
+      count.textContent = poems.length + (poems.length === 1 ? ' poem' : ' poems');
+
+      if(filtered.length===0){
+        const empty = document.createElement('div'); empty.className='empty'; empty.innerHTML = '<div>No poems match your search.</div>';
+        listEl.appendChild(empty);
+      }
+    }
+
+    function openViewer(id){
+      const p = poems.find(x=>x.id===id);
+      if(!p) return;
+      currentId = id;
+      viewerArea.style.display='block';
+      viewerArea.classList.remove('empty');
+      viewerArea.innerHTML = `
+        <h2>${escapeHtml(p.title||'Untitled')}</h2>
+        <div class="meta">Saved: ${new Date(p.created).toLocaleString()}</div>
+        <div class="poem-body">${escapeHtml(p.body)}</div>
+      `;
+      editor.style.display='block';
+      titleInput.value = p.title; bodyInput.value = p.body;
+    }
+
+    function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'\n'); }
+
+    newBtn.addEventListener('click', ()=>{
+      currentId = null; titleInput.value=''; bodyInput.value=''; editor.style.display='block'; viewerArea.style.display='none';
+    });
+
+    saveBtn.addEventListener('click', ()=>{
+      const t = titleInput.value.trim(); const b = bodyInput.value.trim();
+      if(!b){ alert('Poem body is empty — please write something.'); return; }
+      if(currentId){
+        // update
+        poems = poems.map(p=> p.id===currentId ? {...p, title:t, body:b} : p);
+      }else{
+        poems.push({id:genId(), title:t, body:b, created: Date.now()});
+      }
+      saveAll(poems);
+      editor.style.display='none'; viewerArea.style.display='block';
+      renderList(q.value);
+      // open the last-saved
+      const last = poems[poems.length-1]; openViewer(last.id);
+    });
+
+    cancelEdit.addEventListener('click', ()=>{ editor.style.display='none'; viewerArea.style.display='block'; });
+
+    deleteBtn.addEventListener('click', ()=>{
+      if(!currentId){ alert('Nothing selected to delete.'); return; }
+      if(!confirm('Delete this poem? This cannot be undone.')) return;
+      poems = poems.filter(p=> p.id !== currentId);
+      saveAll(poems);
+      currentId = null; editor.style.display='none'; viewerArea.innerHTML = '<div class="empty"><div>Poem deleted. Select another or create a new one.</div></div>';
+      renderList(q.value);
+    });
+
+    q.addEventListener('input', ()=> renderList(q.value));
+
+    exportBtn.addEventListener('click', ()=>{
+      const blob = new Blob([JSON.stringify(poems, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'davids-poems.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    importBtn.addEventListener('click', ()=> fileImport.click());
+    fileImport.addEventListener('change', async (e)=>{
+      const f = e.target.files[0]; if(!f) return;
+      try{
+        const text = await f.text(); const arr = JSON.parse(text);
+        if(!Array.isArray(arr)) throw new Error('Invalid format');
+        // give them the choice to append or replace
+        if(confirm('Append imported poems to existing collection? Press Cancel to replace instead.')){
+          poems = poems.concat(arr.map(x=> ({...x, id: x.id || genId(), created: x.created||Date.now()})));
+        }else{
+          poems = arr.map(x=> ({...x, id: x.id || genId(), created: x.created||Date.now()}));
+        }
+        saveAll(poems);
+        renderList(q.value);
+      }catch(err){ alert('Import failed: '+err.message) }
+    });
+
+    // initial render
+    renderList();
+  </script>
+</body>
+</html>
